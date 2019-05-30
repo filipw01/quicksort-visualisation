@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>i wish this was hungarian folk dance</title>
+  </head>
+  <body>
+    <canvas id="a" width="1910" height="950"></canvas>
+
+    <script>
+      // CANVAS
+
+      (async function() {
+        while (true) {
+          var a_canvas = document.getElementById("a");
+          var context = a_canvas.getContext("2d");
+
+          var items = [];
+          
+          for (let index = 900; index > 50; index-=15) {
+            items.push(index)
+          }
+
+          // for (var i = 75; i > 0; i--) {
+          //   items.push(Math.floor(Math.random() * 900 + 1));
+          // }
+
+
+          // for (let index = 900; index > 50; index-=15) {
+          //   items.push(index)
+          // }
+
+
+          var result = await quickSort(items, 0, items.length - 1);
+          console.log(result);
+          // QUICKSORT
+
+          async function quickSort(arr, left, right) {
+            var len = arr.length,
+              pivot,
+              partitionIndex;
+
+            if (left < right) {
+              pivot = right;
+              partitionIndex = await partition(arr, pivot, left, right);
+
+              //sort left and right
+              await quickSort(arr, left, partitionIndex - 1);
+              await quickSort(arr, partitionIndex + 1, right);
+            }
+            return arr;
+          }
+
+          async function partition(arr, pivot, left, right) {
+            var pivotValue = arr[pivot],
+              partitionIndex = left;
+
+            for (var i = left; i < right; i++) {
+              await paint(items, i, partitionIndex, pivot);
+              if (arr[i] < pivotValue) {
+                swap(arr, i, partitionIndex);
+                partitionIndex++;
+              }
+            }
+
+            swap(arr, right, partitionIndex);
+            return partitionIndex;
+          }
+
+          function swap(items, firstIndex, secondIndex, pivotIndex) {
+            const temp = items[firstIndex];
+            items[firstIndex] = items[secondIndex];
+            items[secondIndex] = temp;
+          }
+          paint(items)
+          await sleep (2000);
+        }
+        
+        function sleep(ms) {
+          return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        async function paint(items, i=undefined, j=undefined, pivotIndex=undefined) {
+          let x = 25;
+          context.clearRect(0, 0, 1910, 950);
+          context.beginPath();
+          for (const item of items) {
+            context.moveTo(x, 950);
+            context.lineTo(x, 950 - item);
+            x += 25;
+          }
+          context.strokeStyle = i==undefined?"#0F0":"#000";
+          context.lineWidth = "20";
+          context.stroke();
+          if(i!==undefined){
+
+          context.beginPath();
+          context.moveTo(25 + 25 * i, 950);
+          context.lineTo(25 + 25 * i, 950 - items[i]);
+          context.strokeStyle = "#0F0";
+          context.lineWidth = "20";
+          context.stroke();
+
+          context.beginPath();
+          context.moveTo(13 + 25 * j, 950);
+          context.lineTo(13 + 25 * j, 0);
+          context.strokeStyle = "#00F";
+          context.lineWidth = "3";
+          context.stroke();
+
+          context.beginPath();
+          context.moveTo(25 + 25 * pivotIndex, 950);
+          context.lineTo(25 + 25 * pivotIndex, 950 - items[pivotIndex]);
+          context.strokeStyle = "#F00";
+          context.lineWidth = "20";
+          context.stroke();
+          }
+
+          const context2 = new (window.AudioContext || window.webkitAudioContext)();
+          var osc = context2.createOscillator(); // instantiate an oscillator
+          osc.frequency.value = Date.now%4==0? i * 60 : i * 40; // Hz
+          osc.type = "toothsaw";
+          osc.connect(context2.destination); // connect it to the destination
+          osc.start(); // start the oscillator
+          osc.stop(context2.currentTime + 0.5); // stop 2 seconds after the current time
+
+          await sleep(10);
+        }
+      })();
+
+    </script>
+  </body>
+</html>
